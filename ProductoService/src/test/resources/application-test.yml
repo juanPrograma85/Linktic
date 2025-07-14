@@ -1,0 +1,10 @@
+spring.profiles.active=test
+spring.datasource.url=jdbc:h2:mem:testdb
+spring.datasource.driverClassName=org.h2.Driver
+spring.h2.console.enabled=true
+spring.jpa.database-platform=org.hibernate.dialect.H2Dialect
+spring.jpa.hibernate.ddl-auto=create-drop
+spring.jpa.show-sql=false
+logging.level.org.springframework.retry=DEBUG
+logging.level.linktic.producto=DEBUG
+security.api-key=test-api-key-12345

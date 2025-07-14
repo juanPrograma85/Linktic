@@ -1,0 +1,65 @@
+version: '3.8'
+
+services:
+  # Producto Service (runs on port 8080)
+  producto-service:
+    build:
+      context: ../ProductoService  # Path to ProductoService folder
+      dockerfile: Dockerfile
+    container_name: producto-service
+    ports:
+      - "8080:8080"  # Maps host port 8080 to container port 8080
+    environment:
+      - SPRING_PROFILES_ACTIVE=docker
+      - JAVA_OPTS=-Xmx512m -Xms256m  # Java 8 memory settings
+    volumes:
+      - producto_data:/app/data  # Persistent storage for H2 database
+    networks:
+      - microservices-network
+    healthcheck:
+      test: ["CMD", "wget", "--no-verbose", "--tries=1", "--spider", "http://localhost:8080/health", "--header=X-API-KEY: apiComunicationKey2025$", "||", "exit", "1"]
+      interval: 30s
+      timeout: 10s
+      retries: 5
+      start_period: 60s
+
+  # Inventario Service (runs on port 8081)
+  inventario-service:
+    build:
+      context: .  # Current directory (InventarioService)
+      dockerfile: Dockerfile
+    container_name: inventario-service
+    ports:
+      - "8081:8081"  # Maps host port 8081 to container port 8081
+    environment:
+      - SPRING_PROFILES_ACTIVE=docker
+      - PRODUCTO_SERVICE_URL=http://producto-service:8080  # Internal Docker network URL
+      - JAVA_OPTS=-Xmx512m -Xms256m  # Java 8 memory settings
+    volumes:
+      - inventario_data:/app/data  # Persistent storage for H2 database
+      - inventario_logs:/app/logs  # Persistent storage for logs
+    networks:
+      - microservices-network
+    depends_on:
+      producto-service:
+        condition: service_healthy  # Wait for producto-service to be healthy
+    healthcheck:
+      test: ["CMD", "wget", "--no-verbose", "--tries=1", "--spider", "http://localhost:8081/health", "--header=X-API-KEY: inventarioMicroKey2025$", "||", "exit", "1"]
+      interval: 30s
+      timeout: 10s
+      retries: 5
+      start_period: 60s
+
+# Network for microservices to communicate
+networks:
+  microservices-network:
+    driver: bridge
+
+# Persistent volumes for data
+volumes:
+  producto_data:
+    driver: local
+  inventario_data:
+    driver: local
+  inventario_logs:
+    driver: local

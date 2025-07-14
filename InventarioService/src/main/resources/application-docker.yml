@@ -1,0 +1,44 @@
+server:
+  port: 8081
+
+# H2 Database Configuration (persistent) - Docker optimized
+spring:
+  datasource:
+    url: jdbc:h2:file:/app/data/inventariodb
+    driver-class-name: org.h2.Driver
+    username: sa
+    password:
+  jpa:
+    hibernate:
+      ddl-auto: update
+    show-sql: false  # Disable SQL logging in Docker for performance
+  h2:
+    console:
+      enabled: true
+      path: /h2-console
+      settings:
+        web-allow-others: true  # Allow H2 console access from outside container
+
+# Product service configuration (uses Docker service name)
+producto-service:
+  url: ${PRODUCTO_SERVICE_URL:http://producto-service:8080}
+  api-key: apiComunicationKey2025$
+  validate-exists: true
+
+security:
+  api-key: inventarioMicroKey2025$
+
+# Logging configuration for Docker
+logging:
+  level:
+    root: INFO
+    linktic.inventario: INFO  # Less verbose in Docker
+    org.springframework.web: WARN
+    org.springframework.security: WARN
+  pattern:
+    console: "%d{yyyy-MM-dd HH:mm:ss} [%thread] %-5level %logger{36} - %msg%n"
+    file: "%d{yyyy-MM-dd HH:mm:ss} [%thread] %-5level %logger{36} - %msg%n"
+  file:
+    name: /app/logs/inventario-service.log
+    max-size: 10MB
+    max-history: 30

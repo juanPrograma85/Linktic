@@ -1,0 +1,41 @@
+server:
+  port: 8081
+
+# H2 Database Configuration (persistent)
+spring:
+  datasource:
+    url: jdbc:h2:file:./data/inventariodb
+    driver-class-name: org.h2.Driver
+    username: sa
+    password:
+  jpa:
+    hibernate:
+      ddl-auto: update
+    show-sql: true
+  h2:
+    console:
+      enabled: true
+      path: /h2-console
+
+producto-service:
+  url: http://localhost:8080
+  api-key: apiComunicationKey2025$
+  validate-exists: true  # Set to false for testing without product service
+
+security:
+  api-key: inventarioMicroKey2025$
+
+# Logging configuration
+logging:
+  level:
+    root: INFO
+    linktic.inventario: DEBUG
+    org.springframework.web: INFO
+    org.springframework.security: WARN
+  pattern:
+    console: "%d{yyyy-MM-dd HH:mm:ss} - %msg%n"
+    file: "%d{yyyy-MM-dd HH:mm:ss} [%thread] %-5level %logger{36} - %msg%n"
+  file:
+    name: logs/inventario-service.log
+    max-size: 10MB
+    max-history: 30
