@@ -1,5 +1,3 @@
-version: '3.8'
-
 services:
   # Producto Service (runs on port 8080)
   producto-service:
@@ -16,12 +14,6 @@ services:
       - producto_data:/app/data  # Persistent storage for H2 database
     networks:
       - microservices-network
-    healthcheck:
-      test: ["CMD", "wget", "--no-verbose", "--tries=1", "--spider", "http://localhost:8080/health", "--header=X-API-KEY: apiComunicationKey2025$", "||", "exit", "1"]
-      interval: 30s
-      timeout: 10s
-      retries: 5
-      start_period: 60s
 
   # Inventario Service (runs on port 8081)
   inventario-service:
@@ -41,14 +33,7 @@ services:
     networks:
       - microservices-network
     depends_on:
-      producto-service:
-        condition: service_healthy  # Wait for producto-service to be healthy
-    healthcheck:
-      test: ["CMD", "wget", "--no-verbose", "--tries=1", "--spider", "http://localhost:8081/health", "--header=X-API-KEY: inventarioMicroKey2025$", "||", "exit", "1"]
-      interval: 30s
-      timeout: 10s
-      retries: 5
-      start_period: 60s
+      - producto-service  # Simple dependency without health check
 
 # Network for microservices to communicate
 networks:

@@ -144,14 +144,15 @@ class ProductoControllerIntegrationTest {
             producto.setPrecio(new BigDecimal(String.valueOf(10.00 * i)));
 
             mockMvc.perform(post("/api/productos")
-                    .with(csrf())
+                    .header(API_KEY_HEADER, API_KEY_VALUE)
                     .contentType(MediaType.APPLICATION_JSON)
                     .content(objectMapper.writeValueAsString(producto)))
                     .andExpect(status().isCreated());
         }
 
         // When & Then - List products
-        mockMvc.perform(get("/api/productos"))
+        mockMvc.perform(get("/api/productos")
+                .header(API_KEY_HEADER, API_KEY_VALUE))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$").isArray())
                 .andExpect(jsonPath("$.length()").value(3));
@@ -167,7 +168,7 @@ class ProductoControllerIntegrationTest {
             producto.setPrecio(new BigDecimal(String.valueOf(20.00 * i)));
 
             mockMvc.perform(post("/api/productos")
-                    .with(csrf())
+                    .header(API_KEY_HEADER, API_KEY_VALUE)
                     .contentType(MediaType.APPLICATION_JSON)
                     .content(objectMapper.writeValueAsString(producto)))
                     .andExpect(status().isCreated());
@@ -175,6 +176,7 @@ class ProductoControllerIntegrationTest {
 
         // When & Then - Test pagination
         mockMvc.perform(get("/api/productos")
+                .header(API_KEY_HEADER, API_KEY_VALUE)
                 .param("page", "0")
                 .param("size", "3"))
                 .andExpect(status().isOk())
@@ -182,6 +184,7 @@ class ProductoControllerIntegrationTest {
                 .andExpect(jsonPath("$.length()").value(3));
 
         mockMvc.perform(get("/api/productos")
+                .header(API_KEY_HEADER, API_KEY_VALUE)
                 .param("page", "1")
                 .param("size", "3"))
                 .andExpect(status().isOk())
@@ -198,7 +201,7 @@ class ProductoControllerIntegrationTest {
         invalidProducto.setPrecio(new BigDecimal("50.00"));
 
         mockMvc.perform(post("/api/productos")
-                .with(csrf())
+                .header(API_KEY_HEADER, API_KEY_VALUE)
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(objectMapper.writeValueAsString(invalidProducto)))
                 .andExpect(status().isBadRequest());
@@ -214,7 +217,7 @@ class ProductoControllerIntegrationTest {
 
         // When & Then
         mockMvc.perform(put("/api/productos/99999")
-                .with(csrf())
+                .header(API_KEY_HEADER, API_KEY_VALUE)
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(objectMapper.writeValueAsString(updateProducto)))
                 .andExpect(status().isNotFound());
@@ -225,7 +228,7 @@ class ProductoControllerIntegrationTest {
     void testDeleteProducto_NotFound() throws Exception {
         // When & Then
         mockMvc.perform(delete("/api/productos/99999")
-                .with(csrf()))
+                .header(API_KEY_HEADER, API_KEY_VALUE))
                 .andExpect(status().isNotFound());
     }
 }

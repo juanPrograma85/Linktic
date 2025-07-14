@@ -8,6 +8,7 @@ RUN mvn clean package -DskipTests
 
 # Etapa 2: imagen liviana para ejecutar
 FROM openjdk:8-jre-alpine
+RUN apk add --no-cache curl
 WORKDIR /app
 COPY --from=build /app/target/*.jar app.jar
 
